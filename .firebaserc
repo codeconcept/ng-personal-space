@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "hellofirestore-d7c0c": {
+      "hosting": {
+        "ng-personal-space": [
+          "hellofirestore-d7c0c"
+        ]
+      }
+    }
+  }
+}

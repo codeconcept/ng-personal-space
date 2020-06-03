@@ -1,6 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
+// Firebase
+import { AngularFireModule } from '@angular/fire';
+import { AngularFireAuthModule } from '@angular/fire/auth';
+
 // Angular Material
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,12 +17,22 @@ import { HomeComponent } from './home/home.component';
 import { ContactComponent } from './contact/contact.component';
 import { LocationComponent } from './location/location.component';
 
+import { environment } from './../environments/environment';
+
 @NgModule({
-  declarations: [AppComponent, LoginComponent, HomeComponent, ContactComponent, LocationComponent],
+  declarations: [
+    AppComponent,
+    LoginComponent,
+    HomeComponent,
+    ContactComponent,
+    LocationComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireAuthModule,
     MatMenuModule,
     MatButtonModule,
   ],
