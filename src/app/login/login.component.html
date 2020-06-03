@@ -1,6 +1,16 @@
 <br />
-<button mat-button color="primary" (click)="loginWithGoogle()">
-  se connecter avec Google
-</button>
+<div *ngIf="!user">
+  <button mat-button color="primary" (click)="loginWithGoogle()">
+    se connecter avec Google
+  </button>
+</div>
+
+<div *ngIf="user">
+  Bonjour {{ user.displayName }}
+  <br />
+  <button mat-raised-button (click)="signOut()">déconnexion</button>
+</div>
+
+<hr />
 
 {{ result | json }}
