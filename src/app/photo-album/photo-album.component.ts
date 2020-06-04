@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import {
-  AngularFirestoreDocumet,
+  AngularFirestoreDocument,
   AngularFirestore,
 } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireStorage } from '@angular/fire/storage';
 
 import { finalize } from 'rxjs/operators';
+import { DbService } from './../services/db.service';
 
 @Component({
   selector: 'app-photo-album',
@@ -18,15 +19,36 @@ export class PhotoAlbumComponent implements OnInit {
   photo = { file: '', title: '' };
   photoServerURL;
   uploadedImgURL = '';
+  personalSpace;
 
   constructor(
     private afAuth: AngularFireAuth,
-    private afStorage: AngularFireStorage
+    private afStorage: AngularFireStorage,
+    private db: DbService
   ) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.afAuth.authState.subscribe((user) => {
+      console.log('user', user);
+
       this.user = user;
+      if (this.user) {
+        // console.log(this.db.readPersonalSpaceByUID(user.uid));
+
+        this.db.readPersonalSpaceByUID(user.uid).subscribe(
+          (data) => {
+            console.log('ngOnInt readPersonnalSpaceById / data', data);
+            this.personalSpace = data;
+            if (!data || data.length === 0) {
+              console.log(`Creating a new space for ${user.displayName}`);
+              this.db.createPersonalSpace(this.user);
+            }
+          },
+          (err) => {
+            console.error('readPersonalSpaceById error', err);
+          }
+        );
+      }
     });
   }
 
@@ -59,17 +81,19 @@ export class PhotoAlbumComponent implements OnInit {
       .pipe(
         finalize(() => {
           this.photoServerURL = photoRef.getDownloadURL();
-          console.log('photoServerURL >>>> ', this.photoServerURL);
-
           this.photoServerURL.subscribe((data) => {
             console.log('data >>> ', data);
             this.uploadedImgURL = data;
+            this.db.updatePersonalSpacePhotoURLs(
+              this.user,
+              this.uploadedImgURL
+            );
           });
         })
       )
       .subscribe();
 
     // clear form
-    this.photo = { fileName: '', title: '' };
+    this.photo = { file: '', title: '' };
   }
 }
